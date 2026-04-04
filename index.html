@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polymarket Whale Tracker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #16213e;
+      border-bottom: 1px solid #0f3460;
+      padding: 18px 24px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #00d4ff;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .whale-icon { font-size: 1.6rem; margin-right: 8px; }
+
+    #status {
+      font-size: 0.8rem;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    #status.loading { color: #ffaa00; }
+    #status.ok      { color: #44ff44; }
+    #status.error   { color: #ff4444; }
+
+    /* ── Filter bar ── */
+    .filter-bar {
+      background: #16213e;
+      border-bottom: 1px solid #0f3460;
+      padding: 8px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filter-bar label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #aaa;
+    }
+
+    select {
+      background: #0f3460;
+      border: 1px solid #1a5276;
+      color: #e0e0e0;
+      font-size: 0.88rem;
+      padding: 5px 30px 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%2300d4ff'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+
+    select:focus { outline: 1px solid #00d4ff; }
+
+    #filter-count {
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    /* ── Main content ── */
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 16px 16px 40px;
+    }
+
+    /* ── Market card ── */
+    .card {
+      background: #0f3460;
+      border: 1px solid #1a4a7a;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+
+    .card:hover { border-color: #00d4ff55; }
+
+    .card-header {
+      padding: 12px 16px 8px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .market-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .total-invested {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #00d4ff;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .card-meta {
+      padding: 0 16px 10px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .outcome {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #ccc;
+    }
+
+    .current-odds {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #ffdd57;
+      background: #1a1a00;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #ffdd5740;
+    }
+
+    .category-badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #00d4ff;
+      background: #001a2e;
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid #00d4ff30;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-left: auto;
+    }
+
+    /* ── Whale rows ── */
+    .whale-list {
+      background: #0a2647;
+      border-top: 1px solid #0f3460;
+      padding: 6px 10px;
+    }
+
+    .whale-row {
+      display: flex;
+      align-items: center;
+      padding: 5px 6px;
+      border-radius: 5px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .whale-row:hover { background: #0d2f55; }
+
+    .whale-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #e0e0e0;
+      min-width: 150px;
+      flex: 1;
+    }
+
+    .whale-entry {
+      font-size: 0.8rem;
+      color: #ff9f43;
+      min-width: 110px;
+    }
+
+    .whale-roi {
+      font-size: 0.8rem;
+      min-width: 80px;
+    }
+
+    .whale-roi.high { color: #44ff44; }
+    .whale-roi.mid  { color: #ffaa00; }
+
+    .whale-invested {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #00d4ff;
+      margin-left: auto;
+    }
+
+    /* ── Empty / spinner states ── */
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid #333;
+      border-top-color: #00d4ff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #empty-msg {
+      text-align: center;
+      color: #555;
+      font-size: 1rem;
+      padding: 60px 20px;
+    }
+
+    /* ── Progress bar ── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      background: #00d4ff;
+      transition: width 0.3s;
+      z-index: 200;
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar" style="width:0%"></div>
+
+<header>
+  <div class="header-top">
+    <div>
+      <h1><span class="whale-icon">🐋</span>Polymarket Whale Tracker</h1>
+    </div>
+    <div id="status" class="loading">
+      <span class="spinner"></span>Loading data…
+    </div>
+  </div>
+</header>
+
+<div class="filter-bar">
+  <label for="cat-select">Category:</label>
+  <select id="cat-select" disabled>
+    <option value="All">All</option>
+  </select>
+  <span id="filter-count"></span>
+</div>
+
+<main>
+  <div id="cards-container">
+    <div id="empty-msg">Fetching whale positions…</div>
+  </div>
+</main>
+
+<script>
+// ─── Config ────────────────────────────────────────────────────────────────
+const MIN_INVESTED   = 50_000;
+const REFRESH_MS     = 60_000;
+const API_DELAY_MS   = 150;
+const BROAD_CATS     = new Set([
+  "sports","politics","crypto","finance","science","tech",
+  "entertainment","pop culture","world","business","geopolitics",
+  "economy","climate","health","ai","gaming","music","culture",
+]);
+
+// ─── State ─────────────────────────────────────────────────────────────────
+let allResults     = [];
+let selectedCat    = "All";
+let refreshTimer   = null;
+
+// ─── Utilities ─────────────────────────────────────────────────────────────
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const fmt$  = n  => "$" + Math.round(n).toLocaleString();
+const fmtPct = p => p != null ? Math.round(p * 100) + "%" : "N/A";
+
+function setProgress(pct) {
+  document.getElementById("progress-bar").style.width = pct + "%";
+}
+
+function setStatus(text, cls) {
+  const el = document.getElementById("status");
+  el.className = cls;
+  el.innerHTML = (cls === "loading" ? '<span class="spinner"></span>' : "") + text;
+}
+
+// ─── API calls ─────────────────────────────────────────────────────────────
+async function fetchWhales() {
+  const resp = await fetch("qualified_whales.json");
+  if (!resp.ok) throw new Error("Could not load qualified_whales.json");
+  return resp.json();
+}
+
+async function fetchPositions(address) {
+  try {
+    const resp = await fetch(
+      `https://data-api.polymarket.com/positions?user=${address}&sizeThreshold=0&limit=500`
+    );
+    if (!resp.ok) return [];
+    return resp.json();
+  } catch { return []; }
+}
+
+async function fetchCategory(slug) {
+  try {
+    // Step 1: market → event slug
+    const r1 = await fetch(`https://gamma-api.polymarket.com/markets?slug=${slug}`);
+    if (!r1.ok) return "Other";
+    const markets = await r1.json();
+    if (!markets.length) return "Other";
+    const events = markets[0].events || [];
+    if (!events.length) return "Other";
+    const eventSlug = events[0].slug;
+
+    // Step 2: event slug → tags
+    const r2 = await fetch(`https://gamma-api.polymarket.com/events?slug=${eventSlug}`);
+    if (!r2.ok) return "Other";
+    const evData = await r2.json();
+    if (!evData.length) return "Other";
+    const tags   = evData[0].tags || [];
+    const labels = tags
+      .map(t => t.label || "")
+      .filter(l => l && !["all","featured"].includes(l.toLowerCase()));
+    const broad  = labels.find(l => BROAD_CATS.has(l.toLowerCase()));
+    const cat    = broad || labels[0] || "";
+    return cat ? cat.trim().replace(/\b\w/g, c => c.toUpperCase()) : "Other";
+  } catch { return "Other"; }
+}
+
+// ─── Core data fetch ────────────────────────────────────────────────────────
+async function fetchAllData() {
+  const whales = await fetchWhales();
+  const agg    = {};
+
+  for (let i = 0; i < whales.length; i++) {
+    setProgress(10 + (i / whales.length) * 55);
+    const whale     = whales[i];
+    const positions = await fetchPositions(whale.address);
+
+    for (const pos of positions) {
+      const curPrice = parseFloat(pos.curPrice  ?? 0);
+      const curVal   = parseFloat(pos.currentValue ?? 0);
+      if (curPrice <= 0.01 || curPrice >= 0.99 || curVal <= 0) continue;
+
+      const title    = pos.title   || "Unknown market";
+      const outcome  = pos.outcome || "N/A";
+      const slug     = pos.slug    || "";
+      const invested = parseFloat(pos.totalBought ?? 0);
+      const avgPrice = parseFloat(pos.avgPrice    ?? 0);
+      const mkey     = `${title}||${outcome}||${slug}`;
+
+      if (!agg[mkey]) {
+        agg[mkey] = { title, outcome, slug, whales: [], totalInvested: 0, curPrice };
+      }
+      agg[mkey].whales.push({ name: whale.username, roi: whale.roi, invested, avgPrice });
+      agg[mkey].totalInvested += invested;
+      agg[mkey].curPrice = curPrice;
+    }
+    await sleep(API_DELAY_MS);
+  }
+
+  // Filter to $50k+
+  const qualifying = Object.values(agg).filter(m => m.totalInvested >= MIN_INVESTED);
+
+  // Fetch categories (dedup by slug)
+  const slugCache = {};
+  for (let i = 0; i < qualifying.length; i++) {
+    setProgress(65 + (i / qualifying.length) * 30);
+    const m = qualifying[i];
+    if (!m.slug) { m.category = "Other"; continue; }
+    if (slugCache[m.slug] !== undefined) {
+      m.category = slugCache[m.slug];
+    } else {
+      m.category = await fetchCategory(m.slug);
+      slugCache[m.slug] = m.category;
+      await sleep(100);
+    }
+  }
+
+  // Sort
+  qualifying.forEach(m => m.whales.sort((a, b) => b.invested - a.invested));
+  qualifying.sort((a, b) => b.totalInvested - a.totalInvested);
+
+  setProgress(100);
+  setTimeout(() => setProgress(0), 600);
+  return qualifying;
+}
+
+// ─── Rendering ──────────────────────────────────────────────────────────────
+function renderCards(results) {
+  const container = document.getElementById("cards-container");
+  container.innerHTML = "";
+
+  if (!results.length) {
+    container.innerHTML = '<div id="empty-msg">No markets match the current filter.</div>';
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+  for (const m of results) {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="market-title">${escHtml(m.title)}</div>
+        <div class="total-invested">${fmt$(m.totalInvested)}</div>
+      </div>
+      <div class="card-meta">
+        <span class="outcome">${escHtml(m.outcome)}</span>
+        <span class="current-odds">Current Odds: ${fmtPct(m.curPrice)}</span>
+        <span class="category-badge">${escHtml(m.category)}</span>
+      </div>
+      <div class="whale-list">
+        ${m.whales.map(w => `
+          <div class="whale-row">
+            <span class="whale-name">${escHtml(w.name)}</span>
+            <span class="whale-entry">Bought @ ${fmtPct(w.avgPrice)}</span>
+            <span class="whale-roi ${w.roi > 50 ? 'high' : 'mid'}">ROI: ${Math.round(w.roi)}%</span>
+            <span class="whale-invested">${fmt$(w.invested)}</span>
+          </div>`).join("")}
+      </div>`;
+
+    frag.appendChild(card);
+  }
+  container.appendChild(frag);
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function applyFilter() {
+  const filtered = selectedCat === "All"
+    ? allResults
+    : allResults.filter(r => r.category === selectedCat);
+  document.getElementById("filter-count").textContent =
+    `Showing ${filtered.length} of ${allResults.length} markets`;
+  renderCards(filtered);
+}
+
+function updateCategoryDropdown() {
+  const cats  = [...new Set(allResults.map(r => r.category))].sort();
+  const sel   = document.getElementById("cat-select");
+  const prev  = sel.value;
+  sel.innerHTML = `<option value="All">All</option>` +
+    cats.map(c => `<option value="${escHtml(c)}">${escHtml(c)}</option>`).join("");
+  sel.value    = (prev && cats.includes(prev)) ? prev : "All";
+  sel.disabled = false;
+  selectedCat  = sel.value;
+}
+
+// ─── Main refresh loop ──────────────────────────────────────────────────────
+async function refresh() {
+  if (refreshTimer) clearTimeout(refreshTimer);
+  setStatus("Refreshing…", "loading");
+
+  try {
+    allResults = await fetchAllData();
+    updateCategoryDropdown();
+    applyFilter();
+
+    const now = new Date().toLocaleTimeString("en-US", { timeZone: "UTC", hour12: false }) + " UTC";
+    setStatus(`Updated ${now} · ${allResults.length} markets`, "ok");
+  } catch (e) {
+    setStatus(`Error: ${e.message}`, "error");
+  }
+
+  refreshTimer = setTimeout(refresh, REFRESH_MS);
+}
+
+// ─── Category select event ──────────────────────────────────────────────────
+document.getElementById("cat-select").addEventListener("change", e => {
+  selectedCat = e.target.value;
+  applyFilter();
+});
+
+// ─── Boot ───────────────────────────────────────────────────────────────────
+refresh();
+</script>
+</body>
+</html>

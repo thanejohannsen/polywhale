@@ -1,0 +1,35 @@
+name: Update Whale List
+
+on:
+  schedule:
+    - cron: '0 6 */3 * *'   # every 3 days at 6am UTC
+  workflow_dispatch:          # manual trigger from GitHub Actions tab
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write         # needed to push the updated JSON back
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run WhaleStrategy
+        run: python WhaleStrategy.py
+
+      - name: Commit updated whale list
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add qualified_whales.json
+          git diff --staged --quiet || git commit -m "chore: update qualified whales [skip ci]"
+          git push
