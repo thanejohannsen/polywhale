@@ -313,7 +313,10 @@ function setStatus(text, cls) {
 // ─── API calls ─────────────────────────────────────────────────────────────
 async function fetchWhales() {
   const resp = await fetch("qualified_whales.json");
-  if (!resp.ok) throw new Error("Could not load qualified_whales.json");
+  if (!resp.ok) throw new Error(
+    "Could not load qualified_whales.json — make sure you've run WhaleStrategy.py and are serving " +
+    "via a web server (not file://). Run: python -m http.server 8080"
+  );
   return resp.json();
 }
 
@@ -329,28 +332,47 @@ async function fetchPositions(address) {
 
 async function fetchCategory(slug) {
   try {
-    // Step 1: market → event slug
+    const tagsFromEvent = async (eventSlug) => {
+      const r = await fetch(`https://gamma-api.polymarket.com/events?slug=${eventSlug}`);
+      if (!r.ok) return null;
+      const data = await r.json();
+      if (!data.length) return null;
+      return data[0].tags || [];
+    };
+
+    const pickLabel = (tags) => {
+      const labels = tags
+        .map(t => t.label || "")
+        .filter(l => l && !["all", "featured"].includes(l.toLowerCase()));
+      const broad = labels.find(l => BROAD_CATS.has(l.toLowerCase()));
+      const cat = broad || labels[0] || "";
+      return cat ? cat.trim().replace(/\b\w/g, c => c.toUpperCase()) : null;
+    };
+
+    // Fast path: many markets share the same slug as their event
+    let tags = await tagsFromEvent(slug);
+    if (tags && tags.length) {
+      const label = pickLabel(tags);
+      if (label) return label;
+    }
+
+    // Fallback: market → embedded event slug → event tags
     const r1 = await fetch(`https://gamma-api.polymarket.com/markets?slug=${slug}`);
     if (!r1.ok) return "Other";
     const markets = await r1.json();
     if (!markets.length) return "Other";
-    const events = markets[0].events || [];
-    if (!events.length) return "Other";
-    const eventSlug = events[0].slug;
+    const embeddedEvents = markets[0].events || [];
+    if (!embeddedEvents.length) return "Other";
+    const eventSlug = embeddedEvents[0].slug;
+    if (!eventSlug || eventSlug === slug) return "Other";
 
-    // Step 2: event slug → tags
-    const r2 = await fetch(`https://gamma-api.polymarket.com/events?slug=${eventSlug}`);
-    if (!r2.ok) return "Other";
-    const evData = await r2.json();
-    if (!evData.length) return "Other";
-    const tags   = evData[0].tags || [];
-    const labels = tags
-      .map(t => t.label || "")
-      .filter(l => l && !["all","featured"].includes(l.toLowerCase()));
-    const broad  = labels.find(l => BROAD_CATS.has(l.toLowerCase()));
-    const cat    = broad || labels[0] || "";
-    return cat ? cat.trim().replace(/\b\w/g, c => c.toUpperCase()) : "Other";
-  } catch { return "Other"; }
+    tags = await tagsFromEvent(eventSlug);
+    if (!tags) return "Other";
+    return pickLabel(tags) || "Other";
+  } catch (e) {
+    console.warn("fetchCategory failed for", slug, e);
+    return "Other";
+  }
 }
 
 // ─── Core data fetch ────────────────────────────────────────────────────────
