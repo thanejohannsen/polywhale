@@ -330,55 +330,18 @@ async function fetchPositions(address) {
   } catch { return []; }
 }
 
-async function fetchCategory(slug) {
+async function loadCategories() {
   try {
-    const tagsFromEvent = async (eventSlug) => {
-      const r = await fetch(`https://gamma-api.polymarket.com/events?slug=${eventSlug}`);
-      if (!r.ok) return null;
-      const data = await r.json();
-      if (!data.length) return null;
-      return data[0].tags || [];
-    };
-
-    const pickLabel = (tags) => {
-      const labels = tags
-        .map(t => t.label || "")
-        .filter(l => l && !["all", "featured"].includes(l.toLowerCase()));
-      const broad = labels.find(l => BROAD_CATS.has(l.toLowerCase()));
-      const cat = broad || labels[0] || "";
-      return cat ? cat.trim().replace(/\b\w/g, c => c.toUpperCase()) : null;
-    };
-
-    // Fast path: many markets share the same slug as their event
-    let tags = await tagsFromEvent(slug);
-    if (tags && tags.length) {
-      const label = pickLabel(tags);
-      if (label) return label;
-    }
-
-    // Fallback: market → embedded event slug → event tags
-    const r1 = await fetch(`https://gamma-api.polymarket.com/markets?slug=${slug}`);
-    if (!r1.ok) return "Other";
-    const markets = await r1.json();
-    if (!markets.length) return "Other";
-    const embeddedEvents = markets[0].events || [];
-    if (!embeddedEvents.length) return "Other";
-    const eventSlug = embeddedEvents[0].slug;
-    if (!eventSlug || eventSlug === slug) return "Other";
-
-    tags = await tagsFromEvent(eventSlug);
-    if (!tags) return "Other";
-    return pickLabel(tags) || "Other";
-  } catch (e) {
-    console.warn("fetchCategory failed for", slug, e);
-    return "Other";
-  }
+    const resp = await fetch("categories.json");
+    if (!resp.ok) return {};
+    return resp.json();
+  } catch { return {}; }
 }
 
 // ─── Core data fetch ────────────────────────────────────────────────────────
 async function fetchAllData() {
-  const whales = await fetchWhales();
-  const agg    = {};
+  const [whales, categoryMap] = await Promise.all([fetchWhales(), loadCategories()]);
+  const agg = {};
 
   for (let i = 0; i < whales.length; i++) {
     setProgress(10 + (i / whales.length) * 55);
@@ -410,19 +373,9 @@ async function fetchAllData() {
   // Filter to $50k+
   const qualifying = Object.values(agg).filter(m => m.totalInvested >= MIN_INVESTED);
 
-  // Fetch categories (dedup by slug)
-  const slugCache = {};
-  for (let i = 0; i < qualifying.length; i++) {
-    setProgress(65 + (i / qualifying.length) * 30);
-    const m = qualifying[i];
-    if (!m.slug) { m.category = "Other"; continue; }
-    if (slugCache[m.slug] !== undefined) {
-      m.category = slugCache[m.slug];
-    } else {
-      m.category = await fetchCategory(m.slug);
-      slugCache[m.slug] = m.category;
-      await sleep(100);
-    }
+  // Assign categories from pre-fetched map
+  for (const m of qualifying) {
+    m.category = (m.slug && categoryMap[m.slug]) ? categoryMap[m.slug] : "Other";
   }
 
   // Sort
