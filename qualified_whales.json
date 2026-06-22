@@ -1,6 +1,6 @@
 [
   {
-    "rank": 3,
+    "rank": 4,
     "username": "GRIMDRIP",
     "address": "0x3f87d51f27ba6e19ec52aaeebb68559a839c742c",
     "pnl": 7602742.057861,
@@ -13,7 +13,7 @@
     "hidden_losses": 0
   },
   {
-    "rank": 12,
+    "rank": 10,
     "username": "afghj2421",
     "address": "0xb91aeb5accc33a5f9a8615b8ed6b2d352e913987",
     "pnl": 1493134.719617252,
@@ -26,29 +26,29 @@
     "hidden_losses": 0
   },
   {
-    "rank": 23,
+    "rank": 14,
     "username": "swisstony",
     "address": "0x204f72f35326db932158cba6adff0b9a1da95e14",
-    "pnl": 764370.7088437546,
-    "roi": 53.37000307810755,
+    "pnl": 1334924.5876924247,
+    "roi": 49.71706366893402,
     "win_rate": 100.0,
     "wins": 50,
     "losses": 0,
-    "total_invested": 18223411.826507,
-    "total_pnl": 9725835.452743001,
+    "total_invested": 19832465.870888006,
+    "total_pnl": 9860119.684148999,
     "hidden_losses": 0
   },
   {
-    "rank": 28,
+    "rank": 29,
     "username": "aenews2",
     "address": "0x44c1dfe43260c94ed4f1d00de2e1f80fb113ebc1",
-    "pnl": 657736.0611022557,
-    "roi": 52.47064122426376,
-    "win_rate": 63.29113924050633,
+    "pnl": 669508.6684717683,
+    "roi": 52.44849839553473,
+    "win_rate": 60.24096385542169,
     "wins": 50,
-    "losses": 29,
-    "total_invested": 35655540.991934,
-    "total_pnl": 18708690.990447987,
-    "hidden_losses": 29
+    "losses": 33,
+    "total_invested": 35660719.885434,
+    "total_pnl": 18703512.096947987,
+    "hidden_losses": 33
   }
 ]
