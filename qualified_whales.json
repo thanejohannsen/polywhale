@@ -1,6 +1,6 @@
 [
   {
-    "rank": 4,
+    "rank": 5,
     "username": "GRIMDRIP",
     "address": "0x3f87d51f27ba6e19ec52aaeebb68559a839c742c",
     "pnl": 7602742.057861,
@@ -13,10 +13,10 @@
     "hidden_losses": 0
   },
   {
-    "rank": 13,
+    "rank": 7,
     "username": "swisstony",
     "address": "0x204f72f35326db932158cba6adff0b9a1da95e14",
-    "pnl": 2482548.1292942856,
+    "pnl": 4822842.396631656,
     "roi": 48.52478670336067,
     "win_rate": 100.0,
     "wins": 50,
@@ -26,7 +26,20 @@
     "hidden_losses": 0
   },
   {
-    "rank": 16,
+    "rank": 15,
+    "username": "",
+    "address": "0x076daa87c4fe1a85402a9b6b8e0a866224388d4c",
+    "pnl": 2128211.4373973184,
+    "roi": 40.59801084988516,
+    "win_rate": 9.578544061302683,
+    "wins": 50,
+    "losses": 472,
+    "total_invested": 9495777.078142002,
+    "total_pnl": 3855096.608464998,
+    "hidden_losses": 472
+  },
+  {
+    "rank": 18,
     "username": "afghj2421",
     "address": "0xb91aeb5accc33a5f9a8615b8ed6b2d352e913987",
     "pnl": 1493134.719617252,
@@ -37,18 +50,5 @@
     "total_invested": 8554882.272442998,
     "total_pnl": 4282930.118637,
     "hidden_losses": 0
-  },
-  {
-    "rank": 26,
-    "username": "mooseborzoi",
-    "address": "0x84cfffc3f16dcc353094de30d4a45226eccd2f63",
-    "pnl": 1021461.5039695468,
-    "roi": 36.45442311481706,
-    "win_rate": 90.9090909090909,
-    "wins": 50,
-    "losses": 5,
-    "total_invested": 20291264.938351005,
-    "total_pnl": 7397063.575974999,
-    "hidden_losses": 5
   }
 ]
