@@ -3,7 +3,7 @@
     "rank": 1,
     "username": "swisstony",
     "address": "0x204f72f35326db932158cba6adff0b9a1da95e14",
-    "pnl": 8901484.40846909,
+    "pnl": 9126150.521752283,
     "roi": 35.47209185337316,
     "win_rate": 100.0,
     "wins": 50,
@@ -26,7 +26,7 @@
     "hidden_losses": 1
   },
   {
-    "rank": 8,
+    "rank": 7,
     "username": "maz26",
     "address": "0x67542c3219b37fd1610aad290676ff91cdbfe3bc",
     "pnl": 2568675.661958316,
@@ -39,23 +39,23 @@
     "hidden_losses": 0
   },
   {
-    "rank": 16,
+    "rank": 15,
     "username": "",
     "address": "0x076daa87c4fe1a85402a9b6b8e0a866224388d4c",
-    "pnl": 1655199.0144264905,
-    "roi": 34.391881228575066,
-    "win_rate": 9.328358208955224,
+    "pnl": 1710859.8986689926,
+    "roi": 34.13371008374243,
+    "win_rate": 9.124087591240876,
     "wins": 50,
-    "losses": 486,
-    "total_invested": 14937845.437929995,
-    "total_pnl": 5137406.061121003,
-    "hidden_losses": 486
+    "losses": 498,
+    "total_invested": 14966596.753729995,
+    "total_pnl": 5108654.745321003,
+    "hidden_losses": 498
   },
   {
-    "rank": 17,
+    "rank": 18,
     "username": "FootballFan98",
     "address": "0xc31d0a0d63d760d72a1236d16beaa6a71c854ebe",
-    "pnl": 1551330.5951127352,
+    "pnl": 1551774.7997327351,
     "roi": 33.08083023901801,
     "win_rate": 44.24778761061947,
     "wins": 50,
@@ -68,17 +68,17 @@
     "rank": 19,
     "username": "highnetworth",
     "address": "0xbb5fbe810633ab08d106b82db84418a0e2ca2e21",
-    "pnl": 1511328.6072958116,
-    "roi": 36.12883347112193,
-    "win_rate": 66.66666666666666,
-    "wins": 14,
-    "losses": 7,
-    "total_invested": 4079601.3307020008,
-    "total_pnl": 1473912.371055,
-    "hidden_losses": 5
+    "pnl": 1528366.134369797,
+    "roi": 34.392802973076016,
+    "win_rate": 65.21739130434783,
+    "wins": 15,
+    "losses": 8,
+    "total_invested": 4335063.644909,
+    "total_pnl": 1490949.898151,
+    "hidden_losses": 6
   },
   {
-    "rank": 23,
+    "rank": 22,
     "username": "yamal19",
     "address": "0xe3f1fb88b9eabc743e2a2d947e2efdba5e99bd92",
     "pnl": 1347506.4261598708,
@@ -91,7 +91,7 @@
     "hidden_losses": 0
   },
   {
-    "rank": 25,
+    "rank": 24,
     "username": "thesingularityisnear",
     "address": "0x3a6a2e7a7707c720219228eb8efa7398bc0e458e",
     "pnl": 1261084.8405477821,
@@ -104,29 +104,29 @@
     "hidden_losses": 12
   },
   {
-    "rank": 27,
+    "rank": 28,
     "username": "myzbsq",
     "address": "0x9468bb7e53c8a5f13cc283f2aed950ebf9865d4b",
-    "pnl": 1145009.2770146786,
-    "roi": 38.79770413675598,
-    "win_rate": 18.181818181818183,
+    "pnl": 1048506.3408421329,
+    "roi": 34.4028346953419,
+    "win_rate": 13.333333333333334,
     "wins": 2,
-    "losses": 9,
-    "total_invested": 2951229.456921,
-    "total_pnl": 1145009.273093,
-    "hidden_losses": 9
+    "losses": 13,
+    "total_invested": 3047732.392921,
+    "total_pnl": 1048506.3370929998,
+    "hidden_losses": 13
   },
   {
-    "rank": 30,
-    "username": "0x75973C667CeC880353450BE3A6F17C5da67B4421-1784278069335",
-    "address": "0x75973c667cec880353450be3a6f17c5da67b4421",
-    "pnl": 917892.9911941001,
-    "roi": 63.86719627409722,
-    "win_rate": 84.61538461538461,
-    "wins": 22,
-    "losses": 4,
-    "total_invested": 1413496.985419,
-    "total_pnl": 902760.894006,
-    "hidden_losses": 3
+    "rank": 29,
+    "username": "Djdjdjekekek",
+    "address": "0x6d20c35f65d9899b6d6b74f8466e824580f9a165",
+    "pnl": 986651.5033939384,
+    "roi": 43.643725443657836,
+    "win_rate": 78.125,
+    "wins": 50,
+    "losses": 14,
+    "total_invested": 12477362.313089002,
+    "total_pnl": 5445585.750534999,
+    "hidden_losses": 14
   }
 ]
